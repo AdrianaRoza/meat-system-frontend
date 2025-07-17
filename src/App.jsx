@@ -1,15 +1,21 @@
-import Layout from "./components/Layout"
-import MeatList from "./components/MeatList"
+import { useState } from "react"
 import MeatForm from "./components/MeatForm"
+import MeatList from "./components/MeatList"
+
 const App = () => {
+  const [refreshSignal, setRefreshSignal] = useState(0)
+
+  const handleSaved = () => {
+    // incrementa sinal para atualizar lista
+    setRefreshSignal((prev) => prev + 1)
+  }
+
   return (
-    <Layout>
-      <p className="text-center text-gray-700">Em breve a lista de carnes vai aparecer aqui!</p>
-      <MeatForm/>
-      {/* <MeatList/> */}
-    </Layout>
+    <div className="min-h-screen bg-gray-100 p-8">
+      <MeatForm onSave={handleSaved} />
+      <MeatList refreshSignal={refreshSignal} />
+    </div>
   )
 }
 
-export default App;
- 
+export default App
