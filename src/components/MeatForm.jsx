@@ -11,16 +11,46 @@ const MeatForm = () => {
 
   const handleChange = (e) => {
     const { name, value} = e.target
-
-
     setForm((prev) => ({
       ...prev,
       [name]: value,
     }))
   }
 
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/meats/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...form,
+          price_per_kg: parseFloat(form.price_per_kg),
+          stock_kg: parseFloat(form.stock_kg),
+        }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        alert("Carne cadastrada com sucesso!")
+        console.log("Resposta do backend:", data)
+        setForm({ name: "", type: "", price_per_kg: "", stock_kg: "" })
+      } else {
+        const error = await response.json()
+        alert("Erro ao cadastrar carne: " + JSON.stringify(error))
+      }
+    } catch (error) {
+      console.error("Erro ao conectar com o backend:", error)
+      alert("Erro ao conectar com o backend")
+    }
+  }
+
   return(
-    <form  
+    <form
+       onSubmit={handleSubmit}  
       className="space-y-4 p-4 bg-white shadow-md rounded max-w-md mx-auto"
     >
       <h2 
