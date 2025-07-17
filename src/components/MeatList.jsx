@@ -1,27 +1,66 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react"
 
-export default function MeatList() {
-  const [meats, setMeats] = useState([]);
+const MeatList = ({ refreshSignal }) => {
+  const [meats, setMeats] = useState([])
+
+  const loadMeats = async () => {
+    try {
+      const res = await fetch("http://localhost:8000/meats")
+      if (!res.ok) throw new Error("Erro ao buscar carnes")
+      const data = await res.json()
+      setMeats(data)
+    } catch (error) {
+      console.error(error)
+      alert("Erro ao carregar carnes")
+    }
+  }
 
   useEffect(() => {
-    // simulacao
-    const dadosFalsos = [
-      { id: 1, name: "Picanha", type: "Bovina", price_per_kg: 60.5, stock_kg: 10 },
-      { id: 2, name: "Alcatra", type: "Bovina", price_per_kg: 45.0, stock_kg: 15 },
-    ];
-    setMeats(dadosFalsos);
-  }, []);
+    loadMeats();
+  }, [refreshSignal]); // recarrega quando refreshSignal muda
+
+  const handleDelete = async (id) => {
+    try {
+      const res = await fetch(`http://localhost:8000/meats/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Erro ao deletar carne")
+      // Recarrega a lista após deletar
+      loadMeats()
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao remover carne")
+    }
+  }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {meats.map((meat) => (
-        <div key={meat.id} className="p-4 bg-white rounded shadow">
-          <h2 className="text-xl font-bold">{meat.name}</h2>
-          <p>Tipo: {meat.type}</p>
-          <p>Preço por Kg: R$ {meat.price_per_kg}</p>
-          <p>Estoque: {meat.stock_kg} Kg</p>
-        </div>
-      ))}
+    <div className="max-w-md mx-auto p-4 bg-white rounded shadow mt-6">
+      <h2 className="text-xl font-bold mb-4">Carnes Salvas</h2>
+      {meats.length === 0 ? (
+        <p>Nenhuma carne cadastrada.</p>
+      ) : (
+        <ul>
+          {meats.map((meat) => (
+            <li
+              key={meat.id}
+              className="flex justify-between items-center p-2 border-b"
+            >
+              <div>
+                <strong>{meat.name}</strong> — {meat.type} — Estoque: {meat.stock_kg}kg — R$ {meat.price_per_kg.toFixed(2)}
+              </div>
+              <button
+                onClick={() => handleDelete(meat.id)}
+                className="bg-red-500 text-white px-3 py-1 rounded 
+                  hover:bg-red-600"
+              >
+                Remover
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
-  );
+  )
 }
+
+export default MeatList
