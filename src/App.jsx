@@ -1,6 +1,5 @@
 import { useState } from "react"
-import MeatForm from "./components/MeatForm"
-import MeatList from "./components/MeatList"
+import MeatSystem from "./components/MeatSystem"
 
 const App = () => {
   const [refreshSignal, setRefreshSignal] = useState(0)
@@ -12,8 +11,7 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
-      <MeatForm onSave={handleSaved} />
-      <MeatList refreshSignal={refreshSignal} />
+      <MeatSystem />
     </div>
   )
 }

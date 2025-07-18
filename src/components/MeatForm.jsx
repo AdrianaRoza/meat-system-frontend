@@ -1,24 +1,48 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
-const MeatForm = ({ onSave }) => {
+const MeatForm = ({ onSave, onCancel, editingMeat }) => {
   const [form, setForm] = useState({
     name: "",
     type: "",
     price_per_kg: "",
     stock_kg: "",
-  });
+  })
+
+  // Carrega dados para editar ou limpa para novo
+  useEffect(() => {
+    if (editingMeat) {
+      setForm({
+        name: editingMeat.name,
+        type: editingMeat.type,
+        price_per_kg: editingMeat.price_per_kg,
+        stock_kg: editingMeat.stock_kg,
+      })
+    } else {
+      setForm({
+        name: "",
+        type: "",
+        price_per_kg: "",
+        stock_kg: "",
+      })
+    }
+  }, [editingMeat]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }))
-  };
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
     try {
-      const res = await fetch("http://localhost:8000/meats", {
-        method: "POST",
+      const method = editingMeat ? "PUT" : "POST"
+      const url = editingMeat
+        ? `http://localhost:8000/meats/${editingMeat.id}`
+        : "http://localhost:8000/meats";
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: form.name,
@@ -32,16 +56,7 @@ const MeatForm = ({ onSave }) => {
 
       const savedMeat = await res.json()
 
-      // Avisar o componente pai que salvou (para atualizar a lista)
       if (onSave) onSave(savedMeat)
-
-      // Limpar formulário
-      setForm({
-        name: "",
-        type: "",
-        price_per_kg: "",
-        stock_kg: "",
-      });
     } catch (error) {
       alert("Erro: " + error.message)
       console.error(error)
@@ -53,7 +68,9 @@ const MeatForm = ({ onSave }) => {
       onSubmit={handleSubmit}
       className="max-w-md mx-auto p-4 bg-white rounded shadow space-y-4"
     >
-      <h2 className="text-xl font-bold text-gray-700">Cadastrar Carne</h2>
+      <h2 className="text-xl font-bold text-gray-700">
+        {editingMeat ? "Editar Carne" : "Cadastrar Carne"}
+      </h2>
 
       <input
         type="text"
@@ -65,15 +82,20 @@ const MeatForm = ({ onSave }) => {
         className="w-full p-2 border rounded"
       />
 
-      <input
-        type="text"
+      <select
         name="type"
-        placeholder="Tipo (bovina, suína...)"
         value={form.type}
         onChange={handleChange}
         required
         className="w-full p-2 border rounded"
-      />
+      >
+        <option value="">Selecione o tipo</option>
+        <option value="bovina">Bovina</option>
+        <option value="suína">Suína</option>
+        <option value="Aves">Aves</option>
+        <option value="peixe">Peixe</option>
+        <option value="outra">Outra</option>
+      </select>
 
       <input
         type="number"
@@ -103,6 +125,15 @@ const MeatForm = ({ onSave }) => {
           hover:bg-green-700 transition"
       >
         Salvar Carne
+      </button>
+
+      <button
+        type="button"
+        onClick={onCancel}
+        className="w-full bg-gray-300 text-gray-800 py-2 rounded 
+          hover:bg-gray-400 transition mt-2"
+      >
+        Cancelar
       </button>
     </form>
   )
