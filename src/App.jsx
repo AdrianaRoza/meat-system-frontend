@@ -1,24 +1,26 @@
-import { useState } from "react"
-import Home from "./pages/Home"
-import Stock from "./pages/Stock"
-import Restock from "./pages/Restock"
-import Sales from "./pages/Sales"
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
+import Home from './pages/Home'
+import Meats from './pages/Meats'
+import Sales from './pages/Sales'
+import Restocks from './pages/Restocks'
 
 export default function App() {
-  const [page, setPage] = useState("home")
-
-  function renderPage() {
-    switch (page) {
-      case "stock":
-        return <Stock onBack={() => setPage("home")} />
-      case "restock":
-        return <Restock onBack={() => setPage("home")} />
-      case "sales":
-        return <Sales onBack={() => setPage("home")} />
-      default:
-        return <Home onNavigate={setPage} />
-    }
-  }
-
-  return renderPage()
+  return (
+    <Router>
+      <nav className="bg-blue-500 p-4 text-white flex gap-4">
+        <Link to="/" className="hover:underline">Home</Link>
+        <Link to="/meats" className="hover:underline">Carnes</Link>
+        <Link to="/sales" className="hover:underline">Vendas</Link>
+        <Link to="/restocks" className="hover:underline">Reabastecimentos</Link>
+      </nav>
+      <main className="p-4">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/meats" element={<Meats />} />
+          <Route path="/sales" element={<Sales />} />
+          <Route path="/restocks" element={<Restocks />} />
+        </Routes>
+      </main>
+    </Router>
+  )
 }
