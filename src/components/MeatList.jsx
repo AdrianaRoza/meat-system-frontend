@@ -11,7 +11,9 @@ export default function MeatList({ meats }) {
       </thead>
       <tbody>
         {meats?.map((meat) => (
-          <tr key={meat.id} className="text-center border-b hover:bg-blue-100">
+          <tr key={meat.id} className="text-center border-b 
+            hover:bg-blue-100"
+          >
             <td className="border px-4 py-2">{meat.name}</td>
             <td className="border px-4 py-2">{meat.type}</td>
             <td className="border px-4 py-2">R$ {meat.price_per_kg?.toFixed(2) ?? "0.00"}</td>
