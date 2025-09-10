@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import Home from './pages/Home'
 import Meats from './pages/Meats'
+import Sales from './pages/Sales'
 
 
 export default function App() {
@@ -16,6 +17,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/meats" element={<Meats />} />
+          <Route path="/sales" element={<Sales/>} />
+          
           
         </Routes>
       </main>
